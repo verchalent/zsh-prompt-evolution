@@ -1,0 +1,114 @@
+# Draft starship config — parity target: the stock p10k-lean preset used in
+# verchalent/dotfiles (dot_p10k.zsh). Colors ported 1:1 from p10k's ANSI-256 codes
+# where a starship equivalent exists. See ../baseline-checklist.md for the full
+# segment inventory and known gaps (instant_prompt, transient_prompt, vicmd char).
+
+format = """
+$os\
+$directory\
+$git_branch\
+$git_status\
+$character"""
+
+right_format = """
+$status\
+$cmd_duration\
+$jobs\
+$direnv\
+$nix_shell\
+$time"""
+
+add_newline = false
+
+[os]
+disabled = false
+style = "white"
+format = "[$symbol]($style) "
+[os.symbols]
+# All codepoints pulled from p10k's own internal/icons.zsh (nerdfont-complete
+# mode, matching the wizard options recorded in dot_p10k.zsh) rather than a
+# generic Nerd Font icon-name lookup \u2014 see baseline-checklist.md, round 3/4
+# for why that distinction matters (wrong icon set = garbled glyph).
+Fedora = "\uf30a"
+Macos = "\uf179"
+Ubuntu = "\uf31b"
+Debian = "\uf306"
+Arch = "\uf303"
+Mint = "\uf30e"
+openSUSE = "\uf314"
+SUSE = "\uf314"
+CentOS = "\uf304"
+Redhat = "\uf316"
+RedHatEnterprise = "\uf316"
+Alpine = "\uf300"
+Manjaro = "\uf312"
+Gentoo = "\uf30d"
+Raspbian = "\uf315"
+NixOS = "\uf313"
+Windows = "\uf17a"
+# p10k has no distinct icon for these either \u2014 falls back to the generic
+# Linux penguin, same as p10k itself does
+Linux = "\uf17c"
+Kali = "\uf17c"
+Void = "\uf17c"
+EndeavourOS = "\uf17c"
+RockyLinux = "\uf17c"
+AlmaLinux = "\uf17c"
+
+[directory]
+style = "31"
+truncation_length = 0
+truncate_to_repo = false
+truncation_symbol = "…/"
+read_only = " "
+
+[git_branch]
+symbol = "\uf126 "
+style = "76"
+
+[git_status]
+style = "178"
+conflicted = "="
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?"
+stashed = "*"
+modified = "!"
+staged = "+${count}"
+renamed = "»"
+deleted = "✘"
+
+[character]
+success_symbol = "[❯](76)"
+error_symbol = "[❯](196)"
+
+[status]
+disabled = false
+format = "[$symbol$status]($style) "
+symbol = "✘"
+style = "196"
+
+[cmd_duration]
+min_time = 0
+format = "[$duration]($style) "
+style = "yellow"
+
+[jobs]
+symbol = "✦ "
+style = "cyan"
+
+[direnv]
+disabled = false
+format = "[$symbol$loaded/$allowed]($style) "
+
+[nix_shell]
+disabled = false
+format = "[$symbol$state]($style) "
+# uses starship's built-in default symbol (plain snowflake emoji, no nerd font needed)
+
+[time]
+disabled = false
+time_format = "%H:%M:%S"
+format = "[$time]($style) "
+style = "bold white"

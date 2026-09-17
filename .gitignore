@@ -1,0 +1,11 @@
+# antidote clones itself here at first run — tool, not config
+/zdotdir/.antidote/
+
+# antidote plugin clones + compiled static bundle
+/zdotdir/.antidote_home/
+/zdotdir/.zsh_plugins.zsh
+/zdotdir/.zsh_plugins.zsh.zwc
+
+# zsh compiled/completion cache from test runs
+/zdotdir/.zcompdump*
+/zdotdir/.cache/
