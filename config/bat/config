@@ -1,0 +1,3 @@
+# Intentionally empty: the home setup has no bat config, so the portable shell keeps
+# bat defaults. Pointing BAT_CONFIG_PATH here stops a guest bat config from
+# leaking in.

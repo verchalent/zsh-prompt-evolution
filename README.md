@@ -1,111 +1,76 @@
 # zsh-prompt-evolution
 
-Migrating amatarsu (Fedora) and a Macbook Air (nix) off oh-my-zsh +
-powerlevel10k onto [antidote](https://github.com/getantidote/antidote) +
-[starship](https://github.com/starship/starship), while keeping the prompt
-look and feel as close to identical as possible. Full plan, decisions, and
-rationale: [`roughplan.md`](roughplan.md) (symlink to the Obsidian vault note
-that's the actual source of truth). Baseline capture, plugin mapping, and a
-log of every bug found/fixed during testing: [`baseline-checklist.md`](baseline-checklist.md).
+A portable shell experience as a Nix flake. One command drops any machine with
+Nix into the same zsh setup: starship prompt, plugins, zellij, colours, helix,
+[ttt](https://github.com/eugenioenko/ttt) and a set of modern CLI tools —
+without touching that machine's own dotfiles.
 
-Live dotfiles (chezmoi source, both machines) for eventual cutover:
-https://github.com/verchalent/dotfiles
+## Usage
 
-## Why a repo instead of editing dotfiles directly
-
-Test configs live here — not in `~` and not in the dotfiles repo — so
-iteration is version-controlled and auditable before anything touches a real
-system. Nothing here is applied to `~/.zshrc` or the dotfiles repo until
-you've validated it and folded it in yourself (see "Cutover" below).
-
-## What's in this repo
-
-```
-zdotdir/
-  .zshrc            isolated test shell config (ZDOTDIR-scoped)
-  starship.toml     prompt config, tuned for parity with the current p10k setup
-  .zsh_plugins.txt  antidote plugin bundle (oh-my-zsh plugin equivalents)
-baseline-checklist.md   baseline capture + parity checklist + bug log
-roughplan.md            symlink to the actual plan/decisions doc (Obsidian vault)
+```sh
+nix run github:<owner>/zsh-prompt-evolution              # starts inside zellij
+nix run github:<owner>/zsh-prompt-evolution -- --no-zellij
+nix run .                                                # from a checkout
 ```
 
-`zdotdir/.antidote/`, `zdotdir/.cache/`, `zdotdir/.zsh_plugins.zsh`, and
-`zdotdir/.zcompdump*` are runtime-generated (git-ignored) — antidote clones
-plugins and caches completions into them on first run.
+Requires Nix with flakes enabled. Fonts and window colours come from the
+terminal you type in; the prompt icons need a
+[Nerd Font](https://www.nerdfonts.com/).
 
-## Tools/plugins in use
+## What you get
 
-Installed via linuxbrew on amatarsu (`brew install antidote starship`); same
-binaries-only approach planned for the Mac via home-manager. Config for both
-lives in this repo / the dotfiles repo, not in nix or brew.
-
-| Tool | Role |
+| Area | Contents |
 |---|---|
-| [antidote](https://github.com/getantidote/antidote) | zsh plugin manager, replaces oh-my-zsh |
-| [starship](https://github.com/starship/starship) | prompt, replaces powerlevel10k |
+| Shell | zsh, starship (powerlevel10k "lean" look), autosuggestions, syntax highlighting, you-should-use, oh-my-zsh `git` (+ `systemd` on Linux) |
+| Multiplexer | zellij with Dracula theme, compact layout, custom keybinds; auto-starts, copies via OSC 52 |
+| Editors | helix (`hx`, `vi`) with Dracula theme, ttt |
+| Tools | lsd, bat, fd, ripgrep, fzf, zoxide, atuin (local only), direnv + nix-direnv, pay-respects, procs, duf, ncdu, fastfetch |
+| Colours | `LS_COLORS` from Fedora's default `DIR_COLORS` |
 
-Antidote plugin bundle (`zdotdir/.zsh_plugins.txt`), mapped 1:1 from the
-current oh-my-zsh plugin list — see `baseline-checklist.md` for the full
-mapping table and rationale:
+Aliases: `ls`/`ll` → lsd, `cat` → bat, `find` → fd, `cd` → z, `ps` → procs,
+`vi` → hx, `df` → duf, `du` → ncdu, `neofetch` → fastfetch.
 
-```
-zsh-users/zsh-autosuggestions
-ohmyzsh/ohmyzsh path:plugins/git
-ohmyzsh/ohmyzsh path:plugins/1password
-ohmyzsh/ohmyzsh path:plugins/chezmoi
-ohmyzsh/ohmyzsh path:plugins/podman
-ohmyzsh/ohmyzsh path:plugins/dnf
-ohmyzsh/ohmyzsh path:plugins/systemd
-MichaelAquilina/zsh-you-should-use
-zsh-users/zsh-syntax-highlighting   # must load last
-```
+## Leaves no trace
 
-`starship.toml` reproduces the current p10k "lean" preset: os icon, directory,
-git branch/status, prompt character on the left; exit status, command
-duration, background jobs, direnv, nix_shell, time on the right. Nerd-font
-icon codepoints are pulled from p10k's own `internal/icons.zsh` (not a
-generic Nerd Font icon-name lookup — two different icon sets can assign
-different codepoints to the same concept, and only some render correctly on
-a given font build; see `baseline-checklist.md` rounds 2–4 for the bugs this
-caused and how they were diagnosed). Covers os icons for Fedora, macOS,
-Ubuntu, Debian, Arch, Mint, openSUSE/SUSE, CentOS, RHEL, Alpine, Manjaro,
-Gentoo, Raspbian, NixOS, Windows, and a generic-Linux fallback for distros
-p10k itself has no unique icon for (Kali, Void, EndeavourOS, RockyLinux,
-AlmaLinux).
-
-## Install / test steps
-
-Prerequisites (installed via brew/linuxbrew; nix/home-manager on the Mac):
+The guest's `~/.zshrc` and `~/.config` are never read or written; every tool is
+pointed at its config in the Nix store. History, zoxide and atuin data, and
+caches live in two directories:
 
 ```sh
-brew install antidote starship
+rm -rf ~/.local/state/zsh-prompt ~/.cache/zsh-prompt   # full cleanup
 ```
 
-Run the isolated test shell — this does **not** touch your real `~/.zshrc`,
-`~/.p10k.zsh`, or the dotfiles repo:
+atuin never syncs and makes no update checks.
+
+## Layout
+
+| Path | Contents |
+|---|---|
+| `config/` | Plain config files: starship, zsh, zellij, helix, atuin, bat, `DIR_COLORS` |
+| `nix/wrapper.nix` | The `zsh-prompt` launcher (`nix run` target) |
+| `nix/packages.nix` | Packages put on `PATH` |
+| `nix/plugins.nix` | zsh plugins and load order |
+| `nix/zdotdir.nix` | Read-only `ZDOTDIR` in the store |
+| `nix/checks.nix` | `nix flake check` targets |
+
+## Development
 
 ```sh
-cd zsh-prompt-evolution
-ZDOTDIR=$(pwd)/zdotdir zsh
+nix flake check   # zsh syntax, starship + zellij config, launcher smoke test
+nix develop       # nixfmt, statix, deadnix, shellcheck, taplo
+nix fmt
 ```
 
-First run clones antidote's plugin bundles and generates completion caches
-under `zdotdir/.cache/` and `zdotdir/.antidote/` (both git-ignored). Exit the
-test shell any time with `exit` — your real shell is untouched.
+### Updating pins
 
-To reset and force a clean re-run (e.g. after editing `.zsh_plugins.txt`):
+`flake.lock` pins nixpkgs (`nixos-26.05`) and ttt. As a supply-chain
+cooldown, only move an input to a revision at least 8 days old:
 
 ```sh
-rm -rf zdotdir/.cache zdotdir/.zsh_plugins.zsh* zdotdir/.zcompdump*
+nix flake lock --override-input nixpkgs github:NixOS/nixpkgs/<rev>
+nix flake lock --override-input ttt github:eugenioenko/ttt/<rev>
 ```
 
-## Cutover (not done yet)
+## License
 
-Once you've validated the look/behavior against the live p10k prompt:
-1. Copy/merge `zdotdir/starship.toml` and `zdotdir/.zsh_plugins.txt` into the
-   `verchalent/dotfiles` chezmoi source repo's proper structure.
-2. Remove the oh-my-zsh/p10k lines from the real `dot_zshrc_xterm-256color`.
-3. `chezmoi apply`, remove old oh-my-zsh/p10k files.
-4. Repeat validation on the Mac before doing the same there.
-
-See `roughplan.md` for the full phased plan.
+MIT

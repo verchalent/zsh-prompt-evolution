@@ -1,7 +1,5 @@
-# Draft starship config — parity target: the stock p10k-lean preset used in
-# verchalent/dotfiles (dot_p10k.zsh). Colors ported 1:1 from p10k's ANSI-256 codes
-# where a starship equivalent exists. See ../baseline-checklist.md for the full
-# segment inventory and known gaps (instant_prompt, transient_prompt, vicmd char).
+# Starship prompt, tuned to look like the powerlevel10k "lean" preset.
+# Colors ported 1:1 from p10k's ANSI-256 codes where a starship equivalent exists.
 
 format = """
 $os\
@@ -26,9 +24,8 @@ style = "white"
 format = "[$symbol]($style) "
 [os.symbols]
 # All codepoints pulled from p10k's own internal/icons.zsh (nerdfont-complete
-# mode, matching the wizard options recorded in dot_p10k.zsh) rather than a
-# generic Nerd Font icon-name lookup \u2014 see baseline-checklist.md, round 3/4
-# for why that distinction matters (wrong icon set = garbled glyph).
+# mode) rather than a generic Nerd Font icon-name lookup: different icon sets
+# assign different codepoints, and the wrong set renders as a garbled glyph.
 Fedora = "\uf30a"
 Macos = "\uf179"
 Ubuntu = "\uf31b"

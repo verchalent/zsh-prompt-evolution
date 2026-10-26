@@ -1,0 +1,59 @@
+# Portable shell experience: interactive zsh config.
+#
+# Sourced by the store-generated $ZDOTDIR/.zshrc (nix/zdotdir.nix), which sets
+# before this file runs:
+#   ZSH_PROMPT_CONFIG     store path of this repo's config/ directory
+#   ZSH_PROMPT_PLUGINS    ordered array of plugin files (syntax-highlighting last)
+#   ZSH_PROMPT_DIRCOLORS  store path of coreutils' dircolors
+# and the zsh-prompt launcher (nix/wrapper.nix) exports:
+#   ZSH_PROMPT_STATE      writable state dir (history, zoxide, atuin)
+#   ZSH_PROMPT_CACHE      writable cache dir (zcompdump, generated completions)
+#
+# Nothing here reads or writes the guest's ~/.zshrc or ~/.config.
+
+# History: same sizes as the home ~/.zshrc, but kept per guest in the state dir.
+HISTSIZE=1000
+SAVEHIST=1000
+HISTFILE="$ZSH_PROMPT_STATE/zsh_history"
+
+export EDITOR=hx
+
+# Fedora's default dircolors, so ls/lsd colours match the home setup.
+eval "$("$ZSH_PROMPT_DIRCOLORS" -b "$ZSH_PROMPT_CONFIG/colors/DIR_COLORS")"
+
+autoload -Uz compinit
+compinit -d "$ZSH_PROMPT_CACHE/zcompdump"
+autoload bashcompinit && bashcompinit
+
+# Some oh-my-zsh plugins expect omz's $ZSH_CACHE_DIR global to write generated
+# completions into. We load them standalone (no oh-my-zsh.sh), so set it here.
+export ZSH_CACHE_DIR="$ZSH_PROMPT_CACHE"
+mkdir -p "$ZSH_CACHE_DIR/completions"
+
+for plugin in "${ZSH_PROMPT_PLUGINS[@]}"; do
+  source "$plugin"
+done
+unset plugin
+
+# was ENABLE_CORRECTION="true" under oh-my-zsh
+setopt correct
+
+# Tool inits, in the same order as the home ~/.zshrc (zoxide moved to the end).
+eval "$(direnv hook zsh)"
+eval "$(atuin init zsh)"
+eval "$(pay-respects zsh --alias)"
+
+# Start inside zellij, SSH sessions included. Panes inherit ZDOTDIR and PATH,
+# so they get this same config; $ZELLIJ stops them from nesting again.
+# `zsh-prompt --no-zellij` sets ZSH_PROMPT_NO_ZELLIJ to skip this.
+if [[ -z "$ZSH_PROMPT_NO_ZELLIJ" ]]; then
+  eval "$(zellij setup --generate-auto-start zsh)"
+fi
+
+source "$ZSH_PROMPT_CONFIG/zsh/fzf.zsh"
+source "$ZSH_PROMPT_CONFIG/zsh/aliases.zsh"
+
+eval "$(starship init zsh)"
+
+# zoxide wants to be initialised last (its doctor warns otherwise).
+eval "$(zoxide init zsh)"

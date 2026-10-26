@@ -1,11 +1,7 @@
-# antidote clones itself here at first run — tool, not config
-/zdotdir/.antidote/
+# nix build output
+/result
 
-# antidote plugin clones + compiled static bundle
-/zdotdir/.antidote_home/
-/zdotdir/.zsh_plugins.zsh
-/zdotdir/.zsh_plugins.zsh.zwc
-
-# zsh compiled/completion cache from test runs
-/zdotdir/.zcompdump*
-/zdotdir/.cache/
+# personal notes, kept locally only
+/baseline-checklist.md
+/roughplan.md
+/local/

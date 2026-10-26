@@ -1,0 +1,12 @@
+theme = "dracula"
+
+[keys.normal]
+# Re-map Ctrl+o (jump forward in jumplist) to Ctrl+p
+# This frees up Ctrl+o for Zellij's Session mode.
+# If you prefer a different key for Helix's jump-forward, change 'C-p' below.
+"C-p" = "jump_forward" # Helix's default Ctrl+o command
+
+# Re-map Ctrl+s (save file) to Ctrl+w
+# This frees up Ctrl+s for Zellij if it uses it.
+# 'C-w' is a common "write" (save) binding in other editors.
+"C-w" = ":write" # Helix's default Ctrl+s command
