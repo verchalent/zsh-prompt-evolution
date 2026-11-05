@@ -24,10 +24,10 @@ terminal you type in; the prompt icons need a
 | Shell | zsh, starship (powerlevel10k "lean" look), autosuggestions, syntax highlighting, you-should-use, oh-my-zsh `git` (+ `systemd` on Linux) |
 | Multiplexer | zellij with Dracula theme, compact layout, custom keybinds; auto-starts, copies via OSC 52 |
 | Editors | helix (`hx`, `vi`) with Dracula theme, ttt |
-| Tools | lsd, bat, fd, ripgrep, fzf, zoxide, atuin (local only), direnv + nix-direnv, pay-respects, procs, duf, ncdu, fastfetch |
+| Tools | lsd, bat, fd, ripgrep, fzf, zoxide, atuin (local only), direnv + nix-direnv, pay-respects, procs, duf, ncdu, fastfetch, curl, tldr (tealdeer) |
 | Colours | `LS_COLORS` from Fedora's default `DIR_COLORS` |
 
-Aliases: `ls`/`ll` → lsd, `cat` → bat, `find` → fd, `cd` → z, `ps` → procs,
+Aliases: `ls`/`ll`/`la` → lsd, `cat` → bat, `find` → fd, `cd` → z, `ps` → procs,
 `vi` → hx, `df` → duf, `du` → ncdu, `neofetch` → fastfetch.
 
 ## Leaves no trace
@@ -40,7 +40,8 @@ caches live in two directories:
 rm -rf ~/.local/state/zsh-prompt ~/.cache/zsh-prompt   # full cleanup
 ```
 
-atuin never syncs and makes no update checks.
+atuin never syncs and makes no update checks. `tldr` keeps its page cache in
+`~/.cache/zsh-prompt/tealdeer` and downloads pages on first use (needs network once).
 
 ## Layout
 

@@ -4,6 +4,7 @@
 alias cat=bat
 alias cd=z
 alias find=fd
+alias la='lsd -la'
 alias ll='lsd -l'
 alias ls='lsd'
 alias ps=procs

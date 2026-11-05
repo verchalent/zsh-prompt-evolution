@@ -17,6 +17,18 @@ let
   atuin = pkgs.writeShellScriptBin "atuin" ''
     XDG_CONFIG_HOME="$ZSH_PROMPT_STATE/atuin/xdg-config" exec ${lib.getExe pkgs.atuin} "$@"
   '';
+
+  # tealdeer: keep its page cache in the prompt's own cache dir (never the guest's
+  # ~/.cache) and fetch pages on first use. Both locations come from env vars it reads.
+  tealdeerConfig = pkgs.writeTextDir "config.toml" ''
+    [updates]
+    auto_update = true
+  '';
+  tldr = pkgs.writeShellScriptBin "tldr" ''
+    export TEALDEER_CACHE_DIR="''${ZSH_PROMPT_CACHE:-''${XDG_CACHE_HOME:-$HOME/.cache}/zsh-prompt}/tealdeer"
+    export TEALDEER_CONFIG_DIR=${tealdeerConfig}
+    exec ${lib.getExe pkgs.tealdeer} "$@"
+  '';
 in
 {
   core = with pkgs; [
@@ -28,9 +40,11 @@ in
   experience = [
     hx
     atuin
+    tldr
     ttt
   ]
   ++ (with pkgs; [
+    curl
     zellij
     ripgrep # ttt workspace search
     lsd
