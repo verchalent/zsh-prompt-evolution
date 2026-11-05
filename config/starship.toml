@@ -3,6 +3,7 @@
 
 format = """
 $os\
+$container\
 $directory\
 $git_branch\
 $git_status\
@@ -17,6 +18,11 @@ $nix_shell\
 $time"""
 
 add_newline = false
+
+# Shown only inside a container (toolbox, distrobox, podman): symbol + container name.
+[container]
+format = "[$symbol\\[$name\\]]($style) "
+style = "bold yellow"
 
 [os]
 disabled = false
